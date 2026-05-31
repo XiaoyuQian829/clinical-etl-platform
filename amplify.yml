@@ -3,9 +3,7 @@ frontend:
   phases:
     preBuild:
       commands:
-        - pwd
-        - ls package.json package-lock.json 2>/dev/null || echo "no lockfile at root"
-        - (cd frontend && pwd && ls package-lock.json && npm ci)
+        - (cd frontend && npm ci --include=dev)
     build:
       commands:
         - (cd frontend && npm run build)
