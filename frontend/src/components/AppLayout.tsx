@@ -51,8 +51,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Logo */}
       <div className="px-[18px] pt-5 pb-4">
         <div className="flex items-center gap-2 mb-1">
-          <svg className="w-4 h-4 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <svg className="w-5 h-4 text-purple-200" fill="none" viewBox="0 0 28 18" stroke="currentColor" strokeWidth={1.8}>
+            <polyline strokeLinecap="round" strokeLinejoin="round" points="0,9 5,9 7,6 9,14 11,2 13,14 15,9 19,9 21,7 23,11 25,9 28,9" />
           </svg>
           <span className="text-[14px] font-bold text-purple-100">ClinicalETL</span>
         </div>
@@ -131,8 +131,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </svg>
           </button>
           <div className="flex items-center gap-2">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="#51247A" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <svg className="w-5 h-4" fill="none" viewBox="0 0 28 18" stroke="#51247A" strokeWidth={1.8}>
+              <polyline strokeLinecap="round" strokeLinejoin="round" points="0,9 5,9 7,6 9,14 11,2 13,14 15,9 19,9 21,7 23,11 25,9 28,9" />
             </svg>
             <span className="text-[14px] font-bold" style={{ color: "#51247A" }}>ClinicalETL</span>
           </div>

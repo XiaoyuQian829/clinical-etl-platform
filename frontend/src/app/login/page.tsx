@@ -38,8 +38,8 @@ export default function LoginPage() {
       <div className="hidden md:flex md:w-[340px] shrink-0 flex-col justify-between p-10" style={{ background: "#51247A" }}>
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <svg className="w-5 h-5 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <svg className="w-6 h-5 text-purple-200" fill="none" viewBox="0 0 28 18" stroke="currentColor" strokeWidth={1.8}>
+              <polyline strokeLinecap="round" strokeLinejoin="round" points="0,9 5,9 7,6 9,14 11,2 13,14 15,9 19,9 21,7 23,11 25,9 28,9" />
             </svg>
             <span className="text-[16px] font-bold text-white">ClinicalETL</span>
           </div>
