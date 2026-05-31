@@ -8,7 +8,7 @@ resource "aws_amplify_app" "frontend" {
     NODE_ENV            = "production"
   }
 
-  platform = "WEB_COMPUTE"
+  platform = "WEB"
   tags     = { Name = "${local.name_prefix}-frontend" }
 }
 
