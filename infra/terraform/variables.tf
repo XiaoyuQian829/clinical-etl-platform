@@ -39,3 +39,9 @@ variable "github_repo" {
   type        = string
   default     = "XiaoyuQian829/clinical-etl-platform"
 }
+
+variable "github_token" {
+  description = "GitHub PAT for Amplify — set via TF_VAR_github_token"
+  type        = string
+  sensitive   = true
+}

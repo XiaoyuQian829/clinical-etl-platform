@@ -24,6 +24,11 @@ output "s3_bucket_name" {
   value       = aws_s3_bucket.raw_data.bucket
 }
 
+output "amplify_url" {
+  description = "Amplify frontend URL (available after first build ~3 min)"
+  value       = "https://master.${aws_amplify_app.frontend.default_domain}"
+}
+
 output "next_steps" {
   description = "What to do after terraform apply"
   value       = <<-EOT
