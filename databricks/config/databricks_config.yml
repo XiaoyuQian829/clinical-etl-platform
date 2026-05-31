@@ -1,0 +1,72 @@
+# Databricks + AWS configuration
+# Fill in your values before running the notebooks.
+
+environment: aws
+
+# ---------------------------------------------------------------------------
+# Cluster
+# ---------------------------------------------------------------------------
+cluster:
+  spark_version: "14.3.x-scala2.12"   # LTS with Delta Lake 3.x
+  node_type_id: "i3.xlarge"            # i3 = fast local NVMe, good for Delta
+  num_workers: 1                        # scale up for production
+  spark_conf:
+    spark.databricks.delta.preview.enabled: "true"
+    spark.hadoop.fs.s3a.aws.credentials.provider: "com.amazonaws.auth.InstanceProfileCredentialsProvider"
+  libraries:
+    - pypi: dbt-postgres==1.8.0
+    - pypi: psycopg2-binary
+
+# ---------------------------------------------------------------------------
+# AWS S3 — raw source data and Delta Lake storage
+# ---------------------------------------------------------------------------
+aws:
+  region: ap-southeast-2              # Sydney — closest to UQ Herston
+  s3_bucket: clinical-etl-raw        # your bucket name
+  s3_prefix: mimic-iv-demo
+
+  # S3 paths used by all notebooks
+  raw_path:    s3a://clinical-etl-raw/mimic-iv-demo/raw
+  bronze_path: s3a://clinical-etl-raw/mimic-iv-demo/bronze
+  silver_path: s3a://clinical-etl-raw/mimic-iv-demo/silver
+  gold_path:   s3a://clinical-etl-raw/mimic-iv-demo/gold
+
+# ---------------------------------------------------------------------------
+# DBFS mount (matches existing mounts block)
+# ---------------------------------------------------------------------------
+mounts:
+  - mount_point: /mnt/clinical_etl
+    source: s3a://clinical-etl-raw/
+    extra_configs:
+      # Prefer IAM instance profile — only use keys if instance profile unavailable
+      fs.s3a.aws.credentials.provider: "com.amazonaws.auth.InstanceProfileCredentialsProvider"
+      # Fallback key-based auth (stored in Databricks Secrets):
+      # fs.s3a.access.key: "{{secrets/clinical_etl/aws_access_key}}"
+      # fs.s3a.secret.key: "{{secrets/clinical_etl/aws_secret_key}}"
+
+# ---------------------------------------------------------------------------
+# Databricks Secrets scope
+# ---------------------------------------------------------------------------
+secrets_scope: clinical_etl
+# Keys stored in this scope:
+#   aws_access_key   — S3 access (if not using instance profile)
+#   aws_secret_key   — S3 secret (if not using instance profile)
+#   pg_password      — RDS PostgreSQL password
+
+# ---------------------------------------------------------------------------
+# PostgreSQL RDS — used by notebook 04 and PowerBI export
+# ---------------------------------------------------------------------------
+postgres:
+  host:     your-rds-endpoint.ap-southeast-2.rds.amazonaws.com
+  port:     5432
+  database: clinicaldb
+  user:     clinicaladmin
+  # password → Databricks Secrets: scope=clinical_etl, key=pg_password
+
+# ---------------------------------------------------------------------------
+# ETL settings
+# ---------------------------------------------------------------------------
+etl:
+  k_anonymity: 5
+  icd_ref_file: d_icd_diagnoses.csv
+  export_format: delta

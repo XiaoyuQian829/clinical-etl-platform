@@ -1,0 +1,33 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "10002428",
+        "gender": "male",
+        "identifier": [{"system": "http://mimic.physionet.org/identifiers/subject", "value": "10002428"}],
+        "extension": [{"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race", "valueString": "WHITE"}]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "10002431",
+        "gender": "female",
+        "identifier": [{"system": "http://mimic.physionet.org/identifiers/subject", "value": "10002431"}],
+        "extension": [{"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race", "valueString": "BLACK/AFRICAN AMERICAN"}]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "10002461",
+        "gender": "female",
+        "identifier": [{"system": "http://mimic.physionet.org/identifiers/subject", "value": "10002461"}],
+        "extension": [{"url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race", "valueString": "HISPANIC/LATINO"}]
+      }
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Raw layer — exact copy of MIMIC-IV source data, no transformations applied"
+    tables:
+      - name: patients
+        description: "Raw patient demographics from MIMIC-IV"
+        columns:
+          - name: subject_id
+            description: "Unique patient identifier"
+            tests: [not_null, unique]
+          - name: gender
+            description: "Patient gender (M/F/UNKNOWN)"
+            tests: [not_null]
+          - name: anchor_age
+            description: "Patient age at anchor year"
+          - name: anchor_year
+            description: "Reference year for age calculation"
+          - name: dod
+            description: "Date of death (if applicable)"
+
+      - name: admissions
+        description: "Raw hospital admission records from MIMIC-IV"
+        columns:
+          - name: hadm_id
+            description: "Unique hospital admission identifier"
+            tests: [not_null, unique]
+          - name: subject_id
+            description: "Patient identifier (FK to patients)"
+            tests: [not_null]
+          - name: admittime
+            description: "Admission datetime"
+            tests: [not_null]
+          - name: admission_type
+            description: "Type of admission (EMERGENCY, URGENT, PLANNED, etc.)"
+
+      - name: diagnoses
+        description: "Raw ICD diagnosis codes linked to admissions"
+        columns:
+          - name: subject_id
+            description: "Patient identifier"
+            tests: [not_null]
+          - name: hadm_id
+            description: "Hospital admission identifier"
+            tests: [not_null]
+          - name: icd_code
+            description: "ICD diagnosis code"
+          - name: icd_version
+            description: "ICD version (9 or 10)"
+
+      - name: icd_reference
+        description: "ICD-9/10 code reference table — 109,775 codes with long_title descriptions (from d_icd_diagnoses.csv)"
+        columns:
+          - name: icd_code
+            description: "ICD code (uppercased)"
+            tests: [not_null]
+          - name: icd_version
+            description: "ICD version (9 or 10)"
+            tests: [not_null]
+          - name: long_title
+            description: "Full description of the diagnosis code"

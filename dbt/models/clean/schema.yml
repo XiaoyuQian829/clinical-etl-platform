@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: clean_patients
+    description: "Standardised patient demographics with age_band classification and quality flag"
+    columns:
+      - name: subject_id
+        description: "Unique patient identifier"
+        tests: [not_null, unique]
+      - name: gender
+        description: "Standardised gender (M/F/UNKNOWN)"
+        tests: [not_null]
+      - name: age_band
+        description: "Age group: PAEDIATRIC/YOUNG_ADULT/ADULT/ELDERLY"
+        tests: [not_null]
+
+  - name: clean_admissions
+    description: "Cleaned admission records with calculated LOS and quality flag"
+    columns:
+      - name: hadm_id
+        description: "Unique hospital admission identifier"
+        tests: [not_null, unique]
+      - name: subject_id
+        tests: [not_null]
+      - name: los_days
+        description: "Length of stay in days (dischtime - admittime)"
+
+  - name: clean_diagnoses
+    description: "ICD diagnosis codes with descriptions and validity flag"
+    columns:
+      - name: hadm_id
+        tests: [not_null]
+      - name: subject_id
+        tests: [not_null]

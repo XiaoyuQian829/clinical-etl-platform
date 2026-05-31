@@ -1,0 +1,95 @@
+name: DBT Tests
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  dbt-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: clinical_etl
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U admin -d clinical_etl"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Init PostgreSQL schema
+        env:
+          PGPASSWORD: admin123
+        run: psql -h localhost -U admin -d clinical_etl -f infra/aws/rds_init.sql
+
+      - name: Run ETL to populate raw tables (for DBT to run against)
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: "5432"
+          POSTGRES_DB: clinical_etl
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+        run: |
+          cd $GITHUB_WORKSPACE
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from etl.extract import extract_patients_csv, extract_admissions_csv, extract_diagnoses_csv
+          from etl.transform import transform_patients, transform_admissions, transform_diagnoses
+          from etl.validate import validate_patients, validate_admissions, validate_diagnoses
+          from etl.load import get_engine, load_patients_raw, load_admissions_raw, load_diagnoses_raw, load_patients_clean, load_admissions_clean, load_diagnoses_clean
+          engine = get_engine()
+          p = transform_patients(extract_patients_csv('data/raw/patients.csv'))
+          a = transform_admissions(extract_admissions_csv('data/raw/admissions.csv'))
+          d = transform_diagnoses(extract_diagnoses_csv('data/raw/diagnoses_icd.csv'))
+          pv, _ = validate_patients(p); av, _ = validate_admissions(a); dv, _ = validate_diagnoses(d)
+          load_patients_raw(pv, engine); load_admissions_raw(av, engine); load_diagnoses_raw(dv, engine)
+          load_patients_clean(pv, engine); load_admissions_clean(av, engine); load_diagnoses_clean(dv, engine)
+          print('ETL complete')
+          "
+
+      - name: DBT deps
+        working-directory: dbt
+        run: dbt deps
+
+      - name: DBT run
+        working-directory: dbt
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+          POSTGRES_DB: clinical_etl
+        run: dbt run
+
+      - name: DBT test
+        working-directory: dbt
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: admin123
+          POSTGRES_DB: clinical_etl
+        run: dbt test
+
+      - name: Post results as PR comment
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            ### DBT Test Results
+            Run: `${{ job.status }}`
+            Commit: `${{ github.sha }}`

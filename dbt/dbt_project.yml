@@ -1,0 +1,29 @@
+name: clinical_etl
+version: "1.0.0"
+config-version: 2
+
+profile: clinical_etl
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  clinical_etl:
+    raw:
+      +materialized: view
+      +schema: raw
+    clean:
+      +materialized: table
+      +schema: clean
+    research:
+      +materialized: table
+      +schema: research

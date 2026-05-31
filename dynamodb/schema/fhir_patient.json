@@ -1,0 +1,24 @@
+{
+  "resourceType": "Patient",
+  "id": "10002428",
+  "meta": {
+    "profile": ["http://hl7.org/fhir/us/core/StructureDefinition/us-core-patient"]
+  },
+  "identifier": [
+    {
+      "system": "http://mimic.physionet.org/identifiers/subject",
+      "value": "10002428"
+    }
+  ],
+  "gender": "M",
+  "birthDate": "REDACTED",
+  "deceasedBoolean": false,
+  "extension": [
+    {
+      "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-race",
+      "valueCodeableConcept": {
+        "coding": [{"system": "urn:oid:2.16.840.1.113883.6.238", "code": "2106-3", "display": "White"}]
+      }
+    }
+  ]
+}
