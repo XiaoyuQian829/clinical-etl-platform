@@ -3,7 +3,7 @@
 > Production-grade ETL pipeline for clinical data ingestion, transformation, governance, and de-identified research export.  
 > Built with **Databricks · DBT · PostgreSQL · FastAPI · Next.js · AWS**
 
-**Live Demo:** http://15.134.175.175:3000  
+**Live Demo:** https://master.d31gb4sqbvncbm.amplifyapp.com  
 **API Docs:** http://15.134.175.175:8000/docs  
 **Region:** AWS ap-southeast-2 (Sydney)
 
