@@ -1,8 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { QRCodeSVG } from "qrcode.react";
 import { api } from "@/lib/api";
+
+// Lazy-load QR code only on client to avoid SSR hydration mismatch
+import dynamic from "next/dynamic";
+const QRCodeSVG = dynamic(() => import("qrcode.react").then(m => m.QRCodeSVG), { ssr: false });
 
 const SITE_URL = "https://master.d31gb4sqbvncbm.amplifyapp.com";
 
