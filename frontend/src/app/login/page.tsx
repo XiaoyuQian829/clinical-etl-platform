@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { QRCodeSVG } from "qrcode.react";
 import { api } from "@/lib/api";
+
+const SITE_URL = "https://master.d31gb4sqbvncbm.amplifyapp.com";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -9,6 +12,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error,    setError]    = useState("");
   const [loading,  setLoading]  = useState(false);
+  const [showQR,   setShowQR]   = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -25,9 +29,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: "#f8f9fb" }}>
-      {/* Left panel */}
-      <div className="w-[340px] shrink-0 flex flex-col justify-between p-10" style={{ background: "#51247A" }}>
+    <div className="min-h-screen flex flex-col md:flex-row" style={{ background: "#f8f9fb" }}>
+
+      {/* ── Left panel (hidden on small mobile, shown md+) ───────── */}
+      <div className="hidden md:flex md:w-[340px] shrink-0 flex-col justify-between p-10" style={{ background: "#51247A" }}>
         <div>
           <div className="flex items-center gap-2 mb-3">
             <svg className="w-5 h-5 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -59,11 +64,29 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-[9px] text-purple-500">UQ Data Engineer · R-63033</p>
+        {/* QR code */}
+        <div className="flex flex-col items-center gap-2">
+          <div className="bg-white rounded-lg p-2">
+            <QRCodeSVG value={SITE_URL} size={96} />
+          </div>
+          <p className="text-[9px] text-purple-400 text-center">Scan to open on mobile</p>
+          <p className="text-[9px] text-purple-500 text-center">UQ Data Engineer · R-63033</p>
+        </div>
       </div>
 
-      {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center px-16">
+      {/* ── Mobile header ────────────────────────────────────────── */}
+      <div className="md:hidden flex items-center gap-3 px-5 py-4" style={{ background: "#51247A" }}>
+        <svg className="w-5 h-5 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <div>
+          <p className="text-[15px] font-bold text-white">ClinicalETL</p>
+          <p className="text-[9px] text-purple-400">UQ Data Engineer Interview</p>
+        </div>
+      </div>
+
+      {/* ── Right panel / login form ─────────────────────────────── */}
+      <div className="flex-1 flex items-center justify-center px-5 md:px-16 py-8">
         <div className="w-full max-w-sm">
           <h2 className="text-[22px] font-bold text-gray-900 mb-1">Sign in</h2>
           <p className="text-[13px] text-gray-400 mb-8">Clinical data governance platform</p>
@@ -108,6 +131,23 @@ export default function LoginPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Mobile QR toggle */}
+          <div className="md:hidden mt-6 border-t border-gray-200 pt-4">
+            <button onClick={() => setShowQR(q => !q)}
+              className="flex items-center gap-2 text-[11px] text-gray-400 hover:text-gray-600">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+              </svg>
+              {showQR ? "Hide QR code" : "Share this page (QR code)"}
+            </button>
+            {showQR && (
+              <div className="mt-3 flex flex-col items-center gap-2 p-4 bg-white border border-gray-200 rounded-lg">
+                <QRCodeSVG value={SITE_URL} size={120} />
+                <p className="text-[10px] text-gray-400 text-center">Scan to open on another device</p>
+              </div>
+            )}
           </div>
         </div>
       </div>
