@@ -3,10 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - npm ci --prefix frontend
+        - pwd
+        - ls package.json package-lock.json 2>/dev/null || echo "no lockfile at root"
+        - (cd frontend && pwd && ls package-lock.json && npm ci)
     build:
       commands:
-        - npm run build --prefix frontend
+        - (cd frontend && npm run build)
   artifacts:
     baseDirectory: frontend/.next
     files:
