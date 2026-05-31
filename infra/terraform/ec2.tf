@@ -24,13 +24,14 @@ resource "aws_instance" "api" {
   key_name               = var.ec2_key_name != "" ? var.ec2_key_name : null
 
   user_data = base64encode(templatefile("${path.module}/templates/userdata.sh", {
-    db_host     = aws_db_instance.postgres.address
-    db_name     = aws_db_instance.postgres.db_name
-    db_user     = aws_db_instance.postgres.username
-    db_password = var.db_password
-    jwt_secret  = var.jwt_secret
-    s3_bucket   = aws_s3_bucket.raw_data.bucket
-    aws_region  = var.aws_region
+    db_host        = aws_db_instance.postgres.address
+    db_name        = aws_db_instance.postgres.db_name
+    db_user        = aws_db_instance.postgres.username
+    db_password    = var.db_password
+    jwt_secret     = var.jwt_secret
+    s3_bucket      = aws_s3_bucket.raw_data.bucket
+    aws_region     = var.aws_region
+    ec2_public_ip  = aws_eip.api.public_ip
   }))
 
   root_block_device {
@@ -41,10 +42,14 @@ resource "aws_instance" "api" {
   tags = { Name = "${local.name_prefix}-api" }
 }
 
-# ── Elastic IP (stable public address) ───────────────────────────────────────
+# ── Elastic IP (allocate first, associate separately to avoid circular dep) ───
 
 resource "aws_eip" "api" {
-  instance = aws_instance.api.id
-  domain   = "vpc"
-  tags     = { Name = "${local.name_prefix}-api-eip" }
+  domain = "vpc"
+  tags   = { Name = "${local.name_prefix}-api-eip" }
+}
+
+resource "aws_eip_association" "api" {
+  instance_id   = aws_instance.api.id
+  allocation_id = aws_eip.api.id
 }

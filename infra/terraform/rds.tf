@@ -11,7 +11,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_instance" "postgres" {
   identifier        = "${local.name_prefix}-postgres-${local.suffix}"
   engine            = "postgres"
-  engine_version    = "15.7"
+  engine_version    = "15.10"
   instance_class    = "db.t3.micro"   # Free Tier eligible
   allocated_storage = 20
   storage_type      = "gp2"

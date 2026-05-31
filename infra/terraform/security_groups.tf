@@ -22,6 +22,14 @@ resource "aws_security_group" "ec2" {
   }
 
   ingress {
+    description = "Next.js frontend"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     description = "SSH"
     from_port   = 22
     to_port     = 22
@@ -43,7 +51,7 @@ resource "aws_security_group" "ec2" {
 
 resource "aws_security_group" "rds" {
   name        = "${local.name_prefix}-rds-sg"
-  description = "PostgreSQL — only accessible from EC2"
+  description = "PostgreSQL - only accessible from EC2"
   vpc_id      = aws_vpc.main.id
 
   ingress {
