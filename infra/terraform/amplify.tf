@@ -4,9 +4,8 @@ resource "aws_amplify_app" "frontend" {
   access_token = var.github_token
 
   environment_variables = {
-    NEXT_PUBLIC_API_URL       = "http://${aws_eip.api.public_ip}:8000"
-    NODE_ENV                  = "production"
-    AMPLIFY_MONOREPO_APP_ROOT = "frontend"
+    NEXT_PUBLIC_API_URL = "http://${aws_eip.api.public_ip}:8000"
+    NODE_ENV            = "production"
   }
 
   platform = "WEB_COMPUTE"
