@@ -71,17 +71,23 @@ clean.*    ← Standardised fields, validated, quality-flagged
 research.* ← Analytics-ready, de-identified, cohort-ready
 ```
 
-| Schema | Table | Rows | Description |
+**29 raw tables** across hosp and ICU modules — ~1.3M rows total.
+
+| Schema | Key tables | Rows | Notes |
 |---|---|---|---|
-| raw | patients | 100 | Direct MIMIC-IV ingest |
-| raw | admissions | 275 | Hospital admissions |
-| raw | diagnoses | 4,506 | ICD-10 coded diagnoses |
-| clean | patients | 100 | + age_band, data_quality_flag |
-| clean | admissions | 275 | + los_days, standardised fields |
-| clean | diagnoses | 4,506 | + icd_description, is_valid_code |
-| research | cohort | 275 | De-identified, cohort_id (ROW_NUMBER) |
-| research | outcomes | 275 | readmission_30d, icu_admission |
-| public | audit_logs | — | Governance trail (JSONB detail) |
+| raw | patients, admissions, diagnoses | 100 / 275 / 4,506 | Core clinical tables |
+| raw | chart_events | 589,080 | ICU vitals (heart rate, BP, SpO2…) |
+| raw | lab_events | 107,727 | Lab results with reference ranges |
+| raw | icd_reference | 109,775 | Full ICD-9/10 code descriptions |
+| raw | prescriptions, pharmacy, emar | 18K / 15K / 36K | Medication orders + administration |
+| raw | input_events, output_events | 20K / 9K | ICU fluid balance |
+| raw | poe, poe_detail | 45K / 3.8K | Provider order entry |
+| raw | icu_stays | 140 | ICU unit + length of stay |
+| raw | procedures_icd, drg_codes | 722 / 454 | ICD procedures + DRG billing |
+| raw | microbiology_events | 2,899 | Culture results + sensitivities |
+| clean | patients, admissions, diagnoses | 100 / 275 / 4,506 | Validated, standardised, quality-flagged |
+| research | cohort, outcomes | 275 / 275 | De-identified, k=5 anonymised |
+| public | audit_logs | — | Every action logged with JSONB detail |
 
 ---
 
@@ -145,7 +151,7 @@ De-identified CSV Export
 
 ```bash
 # 1. Clone
-git clone https://github.com/YOUR_USERNAME/clinical-etl-platform.git
+git clone https://github.com/XiaoyuQian829/clinical-etl-platform.git
 cd clinical-etl-platform
 
 # 2. Environment
@@ -251,5 +257,5 @@ Data is de-identified by the original collectors and used under the [PhysioNet C
 
 ---
 
-*Built for UQ Queensland Digital Health Centre Data Engineer application (R-63033).*  
+*Built for UQ Data Engineer application (R-63033).*  
 *Demonstrates end-to-end clinical data engineering: ingestion → governance → de-identified research export.*
