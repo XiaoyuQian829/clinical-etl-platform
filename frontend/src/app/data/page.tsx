@@ -18,7 +18,7 @@ const TABS = [
   { key: "clean.diagnoses",         label: "clean.diagnoses",         layer: "clean",    desc: "ICD codes + descriptions" },
   { key: "research.cohort",         label: "research.cohort",         layer: "research", desc: "De-identified research cohort" },
   { key: "raw.lab_events",          label: "raw.lab_events",          layer: "raw",      desc: "107,727 lab results" },
-  { key: "raw.chart_events",        label: "raw.chart_events",        layer: "raw",      desc: "668,862 vitals & nurse notes" },
+  { key: "raw.chart_events",        label: "raw.chart_events",        layer: "raw",      desc: "355,320 vitals & nurse notes" },
   { key: "raw.prescriptions",       label: "raw.prescriptions",       layer: "raw",      desc: "18,087 medication orders" },
   { key: "raw.microbiology_events", label: "raw.microbiology_events", layer: "raw",      desc: "2,899 culture results" },
   { key: "raw.icu_stays",           label: "raw.icu_stays",           layer: "raw",      desc: "140 ICU stays" },
