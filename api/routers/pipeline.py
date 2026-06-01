@@ -96,43 +96,20 @@ def _execute_pipeline(run_id: str, client_host: str, user: User) -> None:
         load_admissions_clean(a_valid, engine)
         load_diagnoses_clean(d_valid, engine)
 
-        # Reference / lookup tables
-        load_d_icd_procedures(extract_csv(f"{RAW}/d_icd_procedures.csv"), engine)
+        # Reference / lookup tables (small — safe to load in memory)
         load_d_labitems(extract_csv(f"{RAW}/d_labitems.csv"), engine)
-        load_d_hcpcs(extract_csv(f"{RAW}/d_hcpcs.csv"), engine)
         load_d_items(extract_csv(f"{RAW}/d_items.csv"), engine)
 
-        # Hosp clinical tables
+        # Hosp clinical tables (medium — safe)
         load_drg_codes(extract_csv(f"{RAW}/drgcodes.csv"), engine)
         load_services(extract_csv(f"{RAW}/services.csv"), engine)
         load_transfers(extract_csv(f"{RAW}/transfers.csv"), engine)
-        load_hcpcs_events(extract_csv(f"{RAW}/hcpcsevents.csv"), engine)
         load_omr(extract_csv(f"{RAW}/omr.csv"), engine)
         load_procedures_icd(extract_csv(f"{RAW}/procedures_icd.csv"), engine)
         load_microbiology_events(extract_csv(f"{RAW}/microbiologyevents.csv"), engine)
-        load_poe(extract_csv(f"{RAW}/poe.csv"), engine)
-        load_poe_detail(extract_csv(f"{RAW}/poe_detail.csv"), engine)
-        load_pharmacy(extract_csv(f"{RAW}/pharmacy.csv"), engine)
-        load_emar(extract_csv(f"{RAW}/emar.csv"), engine)
-        load_emar_detail(extract_csv(f"{RAW}/emar_detail.csv"), engine)
-        load_prescriptions(extract_csv(f"{RAW}/prescriptions.csv"), engine)
-
-        # Large hosp/ICU event tables — load in chunks to avoid OOM
-        for path, loader in [
-            (f"{RAW}/labevents.csv",       load_lab_events),        # 107K
-            (f"{RAW}/icustays.csv",        load_icu_stays),
-            (f"{RAW}/inputevents.csv",     load_input_events),
-            (f"{RAW}/outputevents.csv",    load_output_events),
-            (f"{RAW}/procedureevents.csv", load_procedure_events),
-            (f"{RAW}/datetimeevents.csv",  load_datetime_events),
-            (f"{RAW}/ingredientevents.csv",load_ingredient_events),
-            (f"{RAW}/chartevents.csv",     load_chart_events),       # 668K
-        ]:
-            import pandas as pd
-            chunksize = 10_000
-            for chunk in pd.read_csv(path, dtype=str, chunksize=chunksize):
-                chunk = chunk.where(pd.notna(chunk), None)
-                loader(chunk.to_dict(orient="records"), engine)
+        load_icu_stays(extract_csv(f"{RAW}/icustays.csv"), engine)
+        # Note: labevents (107K) and chartevents (668K) are pre-loaded via S3 sync
+        # and skipped here to prevent OOM on t3.small EC2 (2GB RAM)
 
         _runs[run_id]["steps"]["load"] = "complete"
 
