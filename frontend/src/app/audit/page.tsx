@@ -47,7 +47,7 @@ export default function AuditPage() {
       if (userId) params.user_id = userId;
       const res = await api.getAuditLogs(params);
       setLogs(res.data?.logs ?? []);
-    } catch { router.push("/login"); }
+    } catch { setLogs([]); }
     finally { setLoading(false); }
   }, [action, userId, router]);
 

@@ -19,6 +19,35 @@ services:
       timeout: 5s
       retries: 5
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: clinical_etl_api
+    environment:
+      DATABASE_URL: postgresql://admin:admin123@postgres:5432/clinical_etl
+      JWT_SECRET_KEY: dev-secret-change-in-production
+      JWT_ALGORITHM: HS256
+      JWT_EXPIRE_MINUTES: "60"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    platform: linux/amd64
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    container_name: clinical_etl_frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: clinical_etl_pgadmin

@@ -19,7 +19,10 @@ client.interceptors.response.use(
   (err) => { console.error(`[api] error:`, err.response?.data || err.message); return Promise.reject(err); }
 );
 
+export { client };
+
 export const api = {
+  async get(path: string) { return client.get(path); },
   async login(username: string, password: string) {
     const form = new URLSearchParams({ username, password });
     const res = await client.post("/auth/token", form, {
