@@ -100,16 +100,23 @@ def trigger_pipeline(request: Request, user: User = Depends(require_role("pipeli
         load_emar(extract_csv(f"{RAW}/emar.csv"), engine)
         load_emar_detail(extract_csv(f"{RAW}/emar_detail.csv"), engine)
         load_prescriptions(extract_csv(f"{RAW}/prescriptions.csv"), engine)
-        load_lab_events(extract_csv(f"{RAW}/labevents.csv"), engine)   # 107K rows
 
-        # ICU tables
-        load_icu_stays(extract_csv(f"{RAW}/icustays.csv"), engine)
-        load_input_events(extract_csv(f"{RAW}/inputevents.csv"), engine)
-        load_output_events(extract_csv(f"{RAW}/outputevents.csv"), engine)
-        load_procedure_events(extract_csv(f"{RAW}/procedureevents.csv"), engine)
-        load_datetime_events(extract_csv(f"{RAW}/datetimeevents.csv"), engine)
-        load_ingredient_events(extract_csv(f"{RAW}/ingredientevents.csv"), engine)
-        load_chart_events(extract_csv(f"{RAW}/chartevents.csv"), engine)  # 668K rows
+        # Large hosp/ICU event tables — load in chunks to avoid OOM
+        for path, loader in [
+            (f"{RAW}/labevents.csv",       load_lab_events),        # 107K
+            (f"{RAW}/icustays.csv",        load_icu_stays),
+            (f"{RAW}/inputevents.csv",     load_input_events),
+            (f"{RAW}/outputevents.csv",    load_output_events),
+            (f"{RAW}/procedureevents.csv", load_procedure_events),
+            (f"{RAW}/datetimeevents.csv",  load_datetime_events),
+            (f"{RAW}/ingredientevents.csv",load_ingredient_events),
+            (f"{RAW}/chartevents.csv",     load_chart_events),       # 668K
+        ]:
+            import pandas as pd
+            chunksize = 10_000
+            for chunk in pd.read_csv(path, dtype=str, chunksize=chunksize):
+                chunk = chunk.where(pd.notna(chunk), None)
+                loader(chunk.to_dict(orient="records"), engine)
 
         _runs[run_id]["steps"]["load"] = "complete"
 
