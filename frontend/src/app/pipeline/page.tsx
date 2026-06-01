@@ -224,12 +224,14 @@ export default function PipelinePage() {
   const [status,    setStatus]    = useState<any>(null);
   const [history,   setHistory]   = useState<any[]>([]);
   const [expanded,  setExpanded]  = useState<string | null>(null);
+  const [error,     setError]     = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   async function triggerPipeline() {
     setRunning(true);
     setStatus(null);
     setExpanded(null);
+    setError(null);
     try {
       const res = await api.runPipeline();
       const id  = res.data?.run_id;
@@ -246,7 +248,10 @@ export default function PipelinePage() {
           }
         } catch { clearInterval(pollRef.current!); setRunning(false); }
       }, 5000);
-    } catch { setRunning(false); }
+    } catch (e: any) {
+      setRunning(false);
+      setError(e?.response?.data?.detail ?? "Failed to reach API — check backend connection.");
+    }
   }
 
   useEffect(() => () => { if (pollRef.current) clearInterval(pollRef.current); }, []);
@@ -277,6 +282,12 @@ export default function PipelinePage() {
         </div>
 
         <FlowStrip right={allDone ? <><span className="w-[6px] h-[6px] rounded-full bg-green-500 inline-block" /> Complete</> : undefined} />
+
+        {error && (
+          <div className="mx-4 sm:mx-7 mt-3 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-[12px] text-red-700">
+            {error}
+          </div>
+        )}
 
         <div className="flex flex-col gap-5 p-4 sm:p-7 overflow-y-auto">
 

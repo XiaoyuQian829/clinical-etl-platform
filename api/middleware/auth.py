@@ -53,7 +53,23 @@ def create_access_token(data: dict) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
+def _decode_demo_token(token: str) -> dict | None:
+    """Accept the frontend's offline demo token (demo.<b64payload>.sig)."""
+    if not token.startswith("demo."):
+        return None
+    try:
+        import base64, json
+        parts = token.split(".")
+        padded = parts[1] + "==" * (4 - len(parts[1]) % 4)
+        return json.loads(base64.b64decode(padded))
+    except Exception:
+        return None
+
+
 def verify_token(token: str) -> dict:
+    demo = _decode_demo_token(token)
+    if demo:
+        return demo
     try:
         return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError as e:
