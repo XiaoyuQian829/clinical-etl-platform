@@ -1,6 +1,7 @@
 from __future__ import annotations
 import os
 import subprocess
+import threading
 import uuid
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, Request
@@ -14,8 +15,26 @@ router = APIRouter(prefix="/pipeline", tags=["Pipeline"])
 _runs: dict[str, dict] = {}
 
 
+def _run_pipeline_async(run_id: str, client_host: str, user: User) -> None:
+    """Execute the pipeline in a background thread so the API returns immediately."""
+    _execute_pipeline(run_id, client_host, user)
+
+
 @router.post("/run")
 def trigger_pipeline(request: Request, user: User = Depends(require_role("pipeline_run"))):
+    run_id = str(uuid.uuid4())[:8]
+    _runs[run_id] = {
+        "status": "running",
+        "started_at": datetime.now(timezone.utc).isoformat(),
+        "steps": {},
+    }
+    client_host = request.client.host if request.client else "unknown"
+    t = threading.Thread(target=_run_pipeline_async, args=(run_id, client_host, user), daemon=True)
+    t.start()
+    return ok({"run_id": run_id, **_runs[run_id]})
+
+
+def _execute_pipeline(run_id: str, client_host: str, user: User) -> None:
     from etl.extract import (
         extract_patients_csv, extract_admissions_csv, extract_diagnoses_csv, extract_csv,
     )
@@ -37,9 +56,6 @@ def trigger_pipeline(request: Request, user: User = Depends(require_role("pipeli
         load_procedure_events, load_datetime_events, load_ingredient_events,
     )
     from governance.audit import AuditEntry, log_action
-
-    run_id = str(uuid.uuid4())[:8]
-    _runs[run_id] = {"status": "running", "started_at": datetime.now(timezone.utc).isoformat(), "steps": {}}
 
     RAW = "data/raw"
 
@@ -143,7 +159,7 @@ def trigger_pipeline(request: Request, user: User = Depends(require_role("pipeli
 
         log_action(AuditEntry(
             user_id=user.user_id, role=user.role, action="pipeline_run",
-            resource="etl_pipeline", ip_address=request.client.host if request.client else "unknown",
+            resource="etl_pipeline", ip_address=client_host,
             outcome="approved", detail={"run_id": run_id, "records": _runs[run_id]["records"]},
         ), engine)
 
@@ -151,8 +167,6 @@ def trigger_pipeline(request: Request, user: User = Depends(require_role("pipeli
         _runs[run_id]["status"] = "failed"
         _runs[run_id]["error"] = str(e)
         print(f"[pipeline] run {run_id} FAILED: {e}")
-
-    return ok({"run_id": run_id, **_runs[run_id]})
 
 
 @router.get("/status/{run_id}")
