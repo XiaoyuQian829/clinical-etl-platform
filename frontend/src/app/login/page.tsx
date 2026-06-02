@@ -48,10 +48,7 @@ function WhyModal({ onClose }: { onClose: () => void }) {
           </p>
           <p className="text-[12px] text-gray-700 leading-relaxed mt-2">
             Then HR declined my application. I genuinely have no idea why. 🤷
-          </p>
-          <p className="text-[12px] leading-relaxed mt-2 font-medium" style={{ color: "#51247A" }}>
-            Dr Austin — if you happen to see this, I'd love the chance to walk you through it in person.
-            An interview is all I'm asking for.
+            If anyone from the team happens to see this — I'd love the chance to walk through it in person.
           </p>
         </div>
 
@@ -163,164 +160,60 @@ export default function LoginPage() {
         <p className="text-[10px] text-gray-400 text-center leading-snug">Scan to open on mobile</p>
       </div>
 
-      {/* ── Left panel (hidden on small mobile, shown md+) ───────── */}
-      <div className="hidden md:flex md:w-[360px] shrink-0 flex-col px-7 py-7 overflow-y-auto" style={{ background: "#51247A" }}>
+      {/* ── Left panel ───────────────────────────────────────────── */}
+      <div className="hidden md:flex md:w-[320px] shrink-0 flex-col justify-between px-8 py-10" style={{ background: "#51247A" }}>
 
         {/* Logo */}
-        <div className="flex items-center justify-between mb-6 shrink-0">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <svg className="w-5 h-4 text-purple-200" fill="none" viewBox="0 0 28 18" stroke="currentColor" strokeWidth={1.8}>
-                <polyline strokeLinecap="round" strokeLinejoin="round" points="0,9 5,9 7,6 9,14 11,2 13,14 15,9 19,9 21,7 23,11 25,9 28,9" />
-              </svg>
-              <span className="text-[15px] font-bold text-white">ClinicalETL</span>
-            </div>
-            <p className="text-[10px] text-purple-400">UQ Data Engineer · R-63033</p>
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <svg className="w-6 h-5 text-purple-200" fill="none" viewBox="0 0 28 18" stroke="currentColor" strokeWidth={1.8}>
+              <polyline strokeLinecap="round" strokeLinejoin="round" points="0,9 5,9 7,6 9,14 11,2 13,14 15,9 19,9 21,7 23,11 25,9 28,9" />
+            </svg>
+            <span className="text-[17px] font-bold text-white">ClinicalETL</span>
           </div>
+          <p className="text-[11px] text-purple-400">UQ Data Engineer · R-63033</p>
         </div>
 
-        {/* ── Pipeline flow ── */}
-        <p className="text-[10px] font-semibold text-purple-400 uppercase tracking-widest mb-4 shrink-0">Data Pipeline Architecture</p>
+        {/* Pipeline flow — compact horizontal steps */}
+        <div>
+          <p className="text-[10px] font-semibold text-purple-500 uppercase tracking-widest mb-4">Data Pipeline</p>
 
-        <div className="flex flex-col">
+          {/* Steps */}
+          {[
+            { label: "EMR Source", sub: "MIMIC-IV · 1.4M rows", color: "text-purple-200" },
+            { label: "Raw Layer",  sub: "26 tables · S3 → PostgreSQL", color: "text-purple-200" },
+            { label: "Clean Layer", sub: "Pydantic · DBT · ICD-10", color: "text-blue-300" },
+            { label: "Research",   sub: "k-Anon k=5 · de-identified", color: "text-green-300" },
+            { label: "Export",     sub: "Power BI · CSV · FHIR · Databricks", color: "text-purple-300" },
+          ].map((step, i, arr) => (
+            <div key={step.label}>
+              <div className="flex items-center gap-3">
+                <div className="w-[6px] h-[6px] rounded-full shrink-0" style={{ background: "rgba(196,181,216,0.5)" }} />
+                <div>
+                  <p className={`text-[12px] font-semibold ${step.color}`}>{step.label}</p>
+                  <p className="text-[10px]" style={{ color: "#a78bba" }}>{step.sub}</p>
+                </div>
+              </div>
+              {i < arr.length - 1 && (
+                <div className="ml-[2.5px] w-px h-4 my-1" style={{ background: "rgba(196,181,216,0.25)" }} />
+              )}
+            </div>
+          ))}
+        </div>
 
-          {/* ① EMR Source */}
-          <div className="rounded-lg px-3 py-[10px]" style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.15)" }}>
-            <div className="flex items-center gap-2 mb-[5px]">
-              <svg className="w-3 h-3 text-purple-200 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 21H5a2 2 0 01-2-2V7l7-4 7 4v12a2 2 0 01-2 2z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 21V12h6v9" />
-              </svg>
-              <span className="text-[12px] font-bold text-white">EMR Source</span>
-              <span className="ml-auto text-[9px] text-purple-400 font-mono">MIMIC-IV v2.2</span>
+        {/* Key stats */}
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            ["109,775", "ICD codes mapped"],
+            ["22 / 22", "DBT tests passing"],
+            ["k = 5",   "k-Anonymity"],
+            ["RBAC",    "3-role access control"],
+          ].map(([val, label]) => (
+            <div key={label} className="rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,0.07)" }}>
+              <p className="font-mono text-[13px] font-bold text-white">{val}</p>
+              <p className="text-[9px]" style={{ color: "#a78bba" }}>{label}</p>
             </div>
-            <p className="text-[9px] mb-[5px]" style={{ color: "#a78bba" }}>100 patients · 29 CSV files · 1,398,531 rows</p>
-            <div className="flex flex-wrap gap-1">
-              {["patients", "admissions", "chartevents", "labevents", "prescriptions", "+ 24 more"].map(t => (
-                <span key={t} className="font-mono text-[8px] px-[5px] py-[2px] rounded" style={{ background: "rgba(255,255,255,0.08)", color: "#c4b5d8" }}>{t}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* connector: S3 + Extract */}
-          <div className="flex items-stretch gap-3 py-[6px] pl-[14px]">
-            <div className="flex flex-col items-center w-4 shrink-0">
-              <div className="w-px flex-1" style={{ background: "rgba(196,181,216,0.35)" }} />
-              <div className="w-[5px] h-[5px] rotate-45 border-b border-r" style={{ borderColor: "rgba(196,181,216,0.5)", marginTop: "-3px" }} />
-            </div>
-            <div className="pb-[2px]">
-              <p className="text-[10px] font-semibold text-purple-200">S3 → Extract</p>
-              <p className="text-[9px] leading-snug" style={{ color: "#a78bba" }}>s3://clinical-etl-raw-beb9bc88/mimic-iv-demo/raw/</p>
-              <p className="text-[9px] leading-snug" style={{ color: "#a78bba" }}>boto3 · pandas · 128 MB uploaded</p>
-            </div>
-          </div>
-
-          {/* ② Raw Layer */}
-          <div className="rounded-lg px-3 py-[10px]" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}>
-            <div className="flex items-center gap-2 mb-[5px]">
-              <svg className="w-3 h-3 text-purple-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <ellipse cx="12" cy="5" rx="9" ry="3" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12c0 1.657-4.03 3-9 3S3 13.657 3 12" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5" />
-              </svg>
-              <span className="text-[12px] font-bold text-white">Raw Layer</span>
-              <span className="ml-auto font-mono text-[9px] text-purple-400">raw.* · PostgreSQL</span>
-            </div>
-            <p className="text-[9px] mb-[5px]" style={{ color: "#a78bba" }}>26 tables · append-only · exact source copy</p>
-            <div className="flex flex-wrap gap-1">
-              {["core ×3", "ref ×4", "hosp ×12", "icu ×7"].map(t => (
-                <span key={t} className="font-mono text-[8px] px-[5px] py-[2px] rounded" style={{ background: "rgba(255,255,255,0.08)", color: "#c4b5d8" }}>{t}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* connector: Transform + Validate */}
-          <div className="flex items-stretch gap-3 py-[6px] pl-[14px]">
-            <div className="flex flex-col items-center w-4 shrink-0">
-              <div className="w-px flex-1" style={{ background: "rgba(196,181,216,0.35)" }} />
-              <div className="w-[5px] h-[5px] rotate-45 border-b border-r" style={{ borderColor: "rgba(196,181,216,0.5)", marginTop: "-3px" }} />
-            </div>
-            <div className="pb-[2px]">
-              <p className="text-[10px] font-semibold text-purple-200">Transform + Validate</p>
-              <p className="text-[9px] leading-snug" style={{ color: "#a78bba" }}>ICD-10 join · 109,775 codes · Pydantic models</p>
-              <p className="text-[9px] leading-snug" style={{ color: "#a78bba" }}>22 DBT tests · PASS / WARN / FAIL tagging</p>
-            </div>
-          </div>
-
-          {/* ③ Clean Layer */}
-          <div className="rounded-lg px-3 py-[10px]" style={{ background: "rgba(96,165,250,0.12)", border: "1px solid rgba(96,165,250,0.25)" }}>
-            <div className="flex items-center gap-2 mb-[5px]">
-              <svg className="w-3 h-3 text-blue-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-[12px] font-bold text-white">Clean Layer</span>
-              <span className="ml-auto font-mono text-[9px] text-blue-300">clean.*</span>
-            </div>
-            <p className="text-[9px] mb-[5px]" style={{ color: "#93c5fd" }}>Standardised · validated · 88% PASS rate</p>
-            <div className="flex flex-wrap gap-1">
-              {["clean.patients", "clean.admissions", "clean.diagnoses"].map(t => (
-                <span key={t} className="font-mono text-[8px] px-[5px] py-[2px] rounded" style={{ background: "rgba(96,165,250,0.12)", color: "#93c5fd", border: "1px solid rgba(96,165,250,0.2)" }}>{t}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* connector: De-identify */}
-          <div className="flex items-stretch gap-3 py-[6px] pl-[14px]">
-            <div className="flex flex-col items-center w-4 shrink-0">
-              <div className="w-px flex-1" style={{ background: "rgba(196,181,216,0.35)" }} />
-              <div className="w-[5px] h-[5px] rotate-45 border-b border-r" style={{ borderColor: "rgba(196,181,216,0.5)", marginTop: "-3px" }} />
-            </div>
-            <div className="pb-[2px]">
-              <p className="text-[10px] font-semibold text-purple-200">De-identify</p>
-              <p className="text-[9px] leading-snug" style={{ color: "#a78bba" }}>k-Anonymity k=5 · SHA-256 subject hash</p>
-              <p className="text-[9px] leading-snug" style={{ color: "#a78bba" }}>Age bucketing · postcode → state</p>
-            </div>
-          </div>
-
-          {/* ④ Research Layer */}
-          <div className="rounded-lg px-3 py-[10px]" style={{ background: "rgba(34,197,94,0.10)", border: "1px solid rgba(34,197,94,0.22)" }}>
-            <div className="flex items-center gap-2 mb-[5px]">
-              <svg className="w-3 h-3 text-green-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m-4.5 10.5H6a2 2 0 01-2-2v-3a2 2 0 012-2h.5M15 3H9v4l3 2 3-2V3z" />
-              </svg>
-              <span className="text-[12px] font-bold text-white">Research Layer</span>
-              <span className="ml-auto font-mono text-[9px] text-green-300">research.*</span>
-            </div>
-            <p className="text-[9px] mb-[5px]" style={{ color: "#86efac" }}>De-identified · GDPR-aligned · safe to export</p>
-            <div className="flex flex-wrap gap-1">
-              {["research.cohort", "research.outcomes"].map(t => (
-                <span key={t} className="font-mono text-[8px] px-[5px] py-[2px] rounded" style={{ background: "rgba(34,197,94,0.10)", color: "#86efac", border: "1px solid rgba(34,197,94,0.2)" }}>{t}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* connector: Outputs */}
-          <div className="flex items-stretch gap-3 py-[6px] pl-[14px]">
-            <div className="flex flex-col items-center w-4 shrink-0">
-              <div className="w-px flex-1" style={{ background: "rgba(196,181,216,0.35)" }} />
-              <div className="w-[5px] h-[5px] rotate-45 border-b border-r" style={{ borderColor: "rgba(196,181,216,0.5)", marginTop: "-3px" }} />
-            </div>
-            <div className="pb-[2px]">
-              <p className="text-[10px] font-semibold text-purple-200">Governed Output</p>
-              <p className="text-[9px] leading-snug" style={{ color: "#a78bba" }}>RBAC · full audit trail · every access logged</p>
-            </div>
-          </div>
-
-          {/* ⑤ Outputs */}
-          <div className="rounded-lg px-3 py-[10px]" style={{ background: "rgba(168,85,247,0.12)", border: "1px solid rgba(168,85,247,0.25)" }}>
-            <div className="flex items-center gap-2 mb-[6px]">
-              <svg className="w-3 h-3 text-purple-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-              </svg>
-              <span className="text-[12px] font-bold text-white">Outputs</span>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {["Power BI", "CSV Export", "FHIR API", "Databricks"].map(t => (
-                <span key={t} className="font-mono text-[8px] px-[5px] py-[2px] rounded" style={{ background: "rgba(168,85,247,0.12)", color: "#d8b4fe", border: "1px solid rgba(168,85,247,0.25)" }}>{t}</span>
-              ))}
-            </div>
-          </div>
-
+          ))}
         </div>
       </div>
 
