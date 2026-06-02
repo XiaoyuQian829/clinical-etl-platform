@@ -40,7 +40,7 @@ function WhyModal({ onClose }: { onClose: () => void }) {
         {/* Personal note */}
         <div className="px-5 py-4 border-b border-gray-100 shrink-0 bg-amber-50">
           <p className="text-[12px] text-gray-700 leading-relaxed">
-            I built this as a <span className="font-semibold text-gray-900">real, cloud-deployed project</span> specifically for this interview —
+            Hi, I'm <span className="font-semibold text-gray-900">Xiaoyu Qian</span>. I built this as a <span className="font-semibold text-gray-900">real, cloud-deployed project</span> specifically for this interview —
             not a toy demo. I wanted to show what I can actually do with a clinical data pipeline,
             so I took open-source EMR data (MIMIC-IV), stood up a full medallion architecture,
             wired in DBT, Databricks, FHIR, Power BI, Terraform, the works — and shipped it to AWS.
